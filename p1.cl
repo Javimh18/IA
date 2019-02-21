@@ -13,10 +13,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;esta función procesa vectores con el mismo número de dimensiones.
-(defun sum-rec(x y)
+(defun parte-arriba-rec(x y)
     (if (null x)
       0.0  
-        (+ (* (first x) (first y) ) (sum-rec (rest x) (rest y) ) ) ) 
+        (+ (* (first x) (first y) ) (parte-arriba-rec(rest x) (rest y) ) ) ) 
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -34,7 +34,7 @@
 )
 
 ;;; MAPCAR
-(defun sum-mapcar(x y)
+(defun sum_mapcar(x y)
     (if (null x) 
         0.0
         (reduce #'+ (mapcar #'* x y) ) )
@@ -49,7 +49,7 @@
 ;;; OUTPUT: distancia coseno entre x e y
 ;;;
 (defun cosine-distance-mapcar (x y)
-     - 1 / parte-arriba-rec(x y) * sqrt(parte-abajo-rec(x)) sqrt(parte-abajo-rec(y))
+     - 1 / sum_mapcar(x y) * sqrt(sum_mapcar(x x)) sqrt(sum_mapcar(y y))
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -87,7 +87,13 @@
 ;;;         de menor distancia , junto con el valor de dicha distancia
 ;;;
 ( defun get-vectors-category (categories texts distance-measure)
-  )
+    (if (null texts)
+        nil
+        (cons (cons (first (first texts))(funcall distance-measure (rest(first categories)) (rest (first texts)))) (get-vectors-category (rest categories) (rest texts) distance-measure))
+    )
+)
+        
+
 
 
 
