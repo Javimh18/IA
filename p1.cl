@@ -179,7 +179,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; combine-elt-lst
+;;; combine-elt-lst    ----> (combine-elt-lst 'a '(1 2 3)) -> ((A 1) (A 2) (A 3))
 ;;; Combina un elemento dado con todos los elementos de una lista
 ;;;
 ;;; INPUT: elem: elemento a combinar
@@ -188,10 +188,14 @@
 ;;; OUTPUT: lista con las combinacion del elemento con cada uno de los
 ;;;         de la lista
 (defun combine-elt-lst (elt lst)
+  (if (null lst)
+    nil
+    (cons (cons elt (first lst)) (combine-elt-lst elt (rest lst) )
   )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; combine-lst-lst
+;;; combine-lst-lst ----> (combine-lst-lst'(a b c)'(1 2)) ;; --> ((A 1) (A 2) (B 1) (B 2) (C 1) (C 2))
 ;;; Calcula el producto cartesiano de dos listas
 ;;;
 ;;; INPUT: lst1: primera lista
@@ -199,11 +203,20 @@
 ;;;
 ;;; OUTPUT: producto cartesiano de las dos listas
 (defun combine-lst-lst (lst1 lst2)
+  (if (null lst1)
+    nil
+    (append (combine-elt-lst (first lst1 ) lst2) (combine-lst-lst (rest lst1) lst2)   )
   )
-
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; combine-list-of-lsts
+;;(combine-list-of-lsts'((a b c) (+ -) (1 2 3 4)))
+;; --> ((A + 1) (A + 2) (A + 3) (A + 4) (A - 1) (A - 2) (A - 3) (A - 4)
+;;      (B + 1) (B + 2) (B + 3) (B + 4) (B - 1) (B - 2) (B - 3) (B - 4)
+;;      (C + 1) (C + 2) (C + 3) (C + 4) (C - 1) (C - 2) (C - 3) (C - 4))
+
+
 ;;; Calcula todas las posibles disposiciones de elementos
 ;;; pertenecientes a N listas de forma que en cada disposicion 
 ;;; aparezca unicamente un elemento de cada lista
@@ -212,7 +225,23 @@
 ;;;
 ;;; OUTPUT: lista con todas las posibles combinaciones de elementos
 (defun combine-list-of-lsts (lstolsts)
+  (if (null lstolsts)
+    nil
+    (if (null (first lstolsts))
+     ; (combine-list-of-lsts (rest lstolsts) )
+      ;(combine-elt-lst (first (first lstolsts))
+
+    ; estoy pensandoooooooo no rayarse sin terminar
+
+
+    (;cons (combine-lst-lst (first lstolsts) ) )
   )
+)
+
+
+
+
+
 
 
 
