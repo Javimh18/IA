@@ -29,7 +29,7 @@
 ;;; OUTPUT: distancia coseno entre x e y
 ;;;
 (defun cosine-distance-rec (x y)
-    (setq arriba (sum-rec x y))
+    (setq arriba (parte-arriba-rec x y))
     (- 1 (/ (parte-arriba-rec x y) (* (sqrt (parte-arriba-rec x x)) (sqrt (parte-arriba-rec y y)))))
 )
 
@@ -100,7 +100,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJERCICIO 2
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+(defun calcular (f df x0)
+  (- x0 (/(funcall f x0)(funcall df x0)))
+)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; newton
 ;;; Estima el cero de una funcion mediante Newton-Raphson
@@ -113,7 +115,16 @@
 ;;; OUTPUT: estimacion del cero de f o NIL si no converge
 ;;;
 ( defun newton (f df max-iter x0 &optional (tol 0.001))
+  (let* ((xact (calcular f df x0)) (err (abs (- xact x0)))) 
+    (if (= max-iter 0)
+      NIL
+      (if(< err tol)
+        xact
+        (newton f df (- max-iter 1) xact tol)
+      )
+    )
   )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; one-root-newton
@@ -130,26 +141,13 @@
 ;;;          para todas las semillas
 ;;;
 (defun one-root-newton (f df max-iter semillas &optional (tol 0.001))
+  (if (null semillas)
+    NIL
+    (if(null (newton f df (first semillas) tol)) 
+      (one-root-newton f df (rest semillas) tol)
+    )
   )
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; one-root-newton
-;;; Prueba con distintas semillas iniciales hasta que Newton
-;;; converge
-;;;
-;;; INPUT: f: funcion de la que se desea encontrar un cero
-;;;        df: derivada de f
-;;;        max-iter: maximo numero de iteraciones
-;;;        semillas : semillas con las que invocar a Newton
-;;;        tol : tolerancia para convergencia ( parametro opcional )
-;;;
-;;; OUTPUT: el primer cero de f que se encuentre, o NIL si se diverge
-;;;         para todas las semillas
-;;;
-(defun one-root-newton (f df max-iter semillas &optional ( tol 0.001))
-  )
-
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; all-roots-newton
@@ -166,7 +164,13 @@
 ;;;          si para esa semilla el metodo no converge
 ;;;
 (defun all-roots-newton (f df tol-abs max-iter semillas &optional ( tol 0.001))
+   (if(null semillas)
+    NIL
+    (if(null (newton f df (first semillas) tol)) 
+      (cons(newton f df (rest semillas) tol))
+    )
   )
+)
 
 
 
