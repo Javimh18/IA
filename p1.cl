@@ -143,7 +143,7 @@
 (defun one-root-newton (f df max-iter semillas &optional (tol 0.001))
   (if (null semillas)
     NIL
-    (if(null (newton f df (first semillas) tol)) 
+    (if(eql (newton f df (first semillas) tol) NIL) 
       (one-root-newton f df (rest semillas) tol)
     )
   )
@@ -163,13 +163,11 @@
 ;;; OUTPUT: las raices que se encuentren para cada semilla o nil
 ;;;          si para esa semilla el metodo no converge
 ;;;
-(defun all-roots-newton (f df tol-abs max-iter semillas &optional ( tol 0.001))
-   (if(null semillas)
-    NIL
-    (if(null (newton f df (first semillas) tol)) 
-      (cons(newton f df (rest semillas) tol))
+(defun all-roots-newton (f df max-iter semillas &optional ( tol 0.001))
+   (if (null semillas)
+    nil
+      (cons (newton f df max-iter (first semillas) tol) (all-roots-newton f df max-iter semillas &optional tol ) )
     )
-  )
 )
 
 
