@@ -490,7 +490,7 @@
 (defun combine-elt-lst (elt lst)
   (if (null lst)
     nil
-    (cons (cons elt (first lst)) (combine-elt-lst elt (rest lst) )
+    (cons (list elt (first lst)) (combine-elt-lst elt (rest lst) ))
   )
 )
 
@@ -526,24 +526,9 @@
 ;;; OUTPUT: lista con todas las posibles combinaciones de elementos
 (defun combine-list-of-lsts (lstolsts)
   (if (null lstolsts)
-    nil
-    (if (null (first lstolsts))
-     ; (combine-list-of-lsts (rest lstolsts) )
-      ;(combine-elt-lst (first (first lstolsts))
-
-    ; estoy pensandoooooooo no rayarse sin terminar
-
-
-    (;cons (combine-lst-lst (first lstolsts) ) )
-  )
-)
-
-
-
-
-
-
-
+    (list nil)
+    (mapcar #'(lambda (x) (cons (first x) (first (rest x))))
+      (combine-lst-lst (first lstolsts) (combine-list-of-lsts (rest lstolsts))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJERCICIO 4
