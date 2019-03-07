@@ -346,6 +346,40 @@
 ;; EJERCICIO 5
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;; Breadth-first-search in graphs;;;
+(defun bfs (end queue net)
+  ;Si la cola se ha quedado vacía, terminamos
+  (if (null queue) '()
+    ;Si no, guardamos los valores del path (recorrido) y node
+    (let* ((path (first queue))
+      (node (first path))) 
+    ;;; si tenemos que el nodo actual es el mismo que el nodo que queremos encontrar
+    ;;; lo que haremos será devolver el path (lista acumulada de nodos), del reverso, ya que 
+    ;;; tal y como vamos guardando los nodos que encontramos es al revés del orden natural.
+    (if (eql node end)
+      (reverse path) 
+
+    ;;; Si no encontramos el nodo del final, repetimos la operación, uniendo el resto de la cola con 
+    ;;; los nuevos nodos descubiertos, de tal manera que recursivamente vayamos explorando el grafo
+    (bfs end
+      (append (rest queue)
+        (new-paths path node net))
+      net)))))
+
+(defun new-paths (path node net)
+  (mapcar #'(lambda(n)
+    ;el cambio reside aquí, debido a que concatenamos siempre n al path, se generan dichos bucles, 
+    ;con un control de errores chequeando si el nodo ya está en la lista, se evita la recursividad infinita.
+    (if (member n path)
+      nil
+    (cons n path)))
+  (rest (assoc node net)))) 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun shortest-path (start end net) 
+(bfs end (list (list start)) net))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; shortest-path-improved
 ;;; Version de busqueda en anchura que no entra en recursion
@@ -357,7 +391,24 @@
 ;;;         nil si no lo encuentra
 
 (defun bfs-improved (end queue net)
+  ;Si la cola se ha quedado vacía, terminamos
+  (if (null queue) '()
+    ;Si no, guardamos los valores del path (recorrido) y node
+    (let* ((path (first queue))
+      (node (first path))) 
+    ;;; si tenemos que el nodo actual es el mismo que el nodo que queremos encontrar
+    ;;; lo que haremos será devolver el path (lista acumulada de nodos), del reverso, ya que 
+    ;;; tal y como vamos guardando los nodos que encontramos es al revés del orden natural.
+    (if (eql node end)
+      (reverse path) 
+
+    ;;; Si no encontramos el nodo del final, repetimos la operación, uniendo el resto de la cola con 
+    ;;; los nuevos nodos descubiertos, de tal manera que recursivamente vayamos explorando el grafo
+    (bfs-improved end
+      (append (rest queue)
+        (new-paths path node net))
+      net))))
   )
 
 (defun shortest-path-improved (end queue net)
-  )
+  (bfs-improved end (list (list start)) net))
