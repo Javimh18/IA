@@ -305,12 +305,26 @@
 ;;; OUTPUT : T   - FBF es SAT
 ;;;          N   - FBF es UNSAT
 ;;;
-(defun truth-tree (fbf)
-  (let lista () )
-  (expand-truth-tree lista fbf))
+(defun truth-tree (exp)
+  (let ((lista '()))
+  (expand-truth-tree lista exp)))
 
 (defun expand-truth-tree (lista exp)
-  (if (tiene-contradicciones list)
+  (if (eql (first exp) +cond+)
+    (expand-truth-tree lista (cons +or+ (cons +not+ (second exp)) (third exp))
+
+    (if (eql (first exp) +cond+ 
+
+
+
+  )
+
+(expand-truth-tree lista )
+
+
+
+
+  (if (tiene-contradicciones lista)
     NIL
 
     (if (literal-p (first exp)) ;LITERAL
@@ -328,7 +342,7 @@
           (if (null (some #'(lambda (x) (setq lista (append lista (expand-truth-tree lits x)))) (rest exp))) NIL)) ; siempre añade literales si es SAT
 
           (if (eql (first exp) +cond+) ; COND =>
-            
+
 
 
 
