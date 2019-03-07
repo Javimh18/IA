@@ -395,10 +395,6 @@
     )
 )
 
-
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJERCICIO 2
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -468,7 +464,7 @@
 (defun all-roots-newton (f df max-iter semillas &optional ( tol 0.001))
    (if (null semillas)
     nil
-      (cons (newton f df max-iter (first semillas) tol) (all-roots-newton f df max-iter semillas &optional tol ) )
+      (cons (newton f df max-iter (first semillas) tol) (all-roots-newton f df max-iter (rest semillas) &optional tol ) )
     )
 )
 
@@ -669,71 +665,6 @@
   (if (null lits)
     NIL
     (cons (expand-truth-tree lista (first lits)) (flowor lista (rest lits)))))
-
-
-
-
-  (if (tiene-contradicciones lista)
-    NIL
-
-    (if (literal-p (first exp)) ;LITERAL
-      (cons exp list)
-
-      (if (eql (first exp) +and+) ; AND
-        ((let lits lista)
-        (if (null (every #'(lambda (x) (setq lits (expand-truth-tree lits x)) ) (rest exp))) ; añade a nuevos literales por iteracion si es SAT
-          NIL
-          (setq lista (append lista lst))
-        ))
-
-        (if (eql (first exp) +or+) ; OR
-          ((let lits lista)
-          (if (null (some #'(lambda (x) (setq lista (append lista (expand-truth-tree lits x)))) (rest exp))) NIL)) ; siempre añade literales si es SAT
-
-          (if (eql (first exp) +cond+) ; COND =>
-
-
-
-
-          )
-        )
-      )
-    )
-  )
-)
-
-
- (maplist #'(lambda (x) (cons 'foo x)) '(a b c d))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; EJERCICIO 5
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; shortest-path-improved
-;;; Version de busqueda en anchura que no entra en recursion
-;;; infinita cuando el grafo tiene ciclos
-;;; INPUT:   end: nodo final
-;;;          queue: cola de nodos por explorar
-;;;          net: grafo
-;;; OUTPUT: camino mas corto entre dos nodos
-;;;         nil si no lo encuentra
-
-(defun bfs-improved (end queue net)
-  )
-
-(defun shortest-path-improved (end queue net)
-  )
-
-;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
-;;; OUTPUT : T   - FBF es SAT
-;;;          N   - FBF es UNSAT
-;;;
-
-
-  )
-
-(expand-truth-tree lista )
 
 
 
