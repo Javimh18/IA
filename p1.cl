@@ -3,9 +3,9 @@
 ;(cosine-distance-rec '(1 2) '(1 2 3)) => 0.40238577 (No estamos seguros de la coherencia de este resultado pues el número de dimensiones de los vectores es diferente)
 ;(cosine-distance-rec nil '(1 2 3)) => No se puede calcular esta operación dado que el 1º vector es vacío
 ;(cosine-distance-rec ’() ’()) => Dadas las listas vacías es imposible de calcular con exactitud este valor.
-;(cosine-distance ’(0 0) ’(0 0)) => matemáticamente siguiendo la fórmula obtendríamos que la fórmula acabaría en el calculo de 1 - 0/0, dado que sabemos que el ángulo 
-;que se forma entre dos vectores que son iguales es 0, y que cos(0º) = 1, la distancia coseno sería de 1-1 = 0, no sabemos si tenemos que demostrarlo programándolo o 
-;si por conocimientos básicos de matemáticas deberíamos de llegar a esta conclusión en el cálculo. 
+;(cosine-distance ’(0 0) ’(0 0)) => matemáticamente siguiendo la fórmula obtendríamos que la fórmula acabaría en el calculo de 1 - 0/0, dado que sabemos que el ángulo
+;que se forma entre dos vectores que son iguales es 0, y que cos(0º) = 1, la distancia coseno sería de 1-1 = 0, no sabemos si tenemos que demostrarlo programándolo o
+;si por conocimientos básicos de matemáticas deberíamos de llegar a esta conclusión en el cálculo.
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -15,8 +15,8 @@
 ;esta función procesa vectores con el mismo número de dimensiones.
 (defun parte-arriba-rec(x y)
     (if (null x)
-      0.0  
-        (+ (* (first x) (first y) ) (parte-arriba-rec(rest x) (rest y) ) ) ) 
+      0.0
+        (+ (* (first x) (first y) ) (parte-arriba-rec(rest x) (rest y) ) ) )
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -35,7 +35,7 @@
 
 ;;; MAPCAR
 (defun sum_mapcar(x y)
-    (if (null x) 
+    (if (null x)
         0.0
         (reduce #'+ (mapcar #'* x y) ) )
 )
@@ -92,7 +92,7 @@
         (cons (cons (first (first texts))(funcall distance-measure (rest(first categories)) (rest (first texts)))) (get-vectors-category (rest categories) (rest texts) distance-measure))
     )
 )
-        
+
 
 
 
@@ -115,7 +115,7 @@
 ;;; OUTPUT: estimacion del cero de f o NIL si no converge
 ;;;
 ( defun newton (f df max-iter x0 &optional (tol 0.001))
-  (let* ((xact (calcular f df x0)) (err (abs (- xact x0)))) 
+  (let* ((xact (calcular f df x0)) (err (abs (- xact x0))))
     (if (= max-iter 0)
       NIL
       (if(< err tol)
@@ -143,7 +143,7 @@
 (defun one-root-newton (f df max-iter semillas &optional (tol 0.001))
   (if (null semillas)
     NIL
-    (if(eql (newton f df (first semillas) tol) NIL) 
+    (if(eql (newton f df (first semillas) tol) NIL)
       (one-root-newton f df (rest semillas) tol)
     )
   )
@@ -216,7 +216,7 @@
 
 
 ;;; Calcula todas las posibles disposiciones de elementos
-;;; pertenecientes a N listas de forma que en cada disposicion 
+;;; pertenecientes a N listas de forma que en cada disposicion
 ;;; aparezca unicamente un elemento de cada lista
 ;;;
 ;;; INPUT: lstolsts: lista de listas
@@ -298,7 +298,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; truth-tree
-;;; Recibe una expresion y construye su arbol de verdad para 
+;;; Recibe una expresion y construye su arbol de verdad para
 ;;; determinar si es SAT o UNSAT
 ;;;
 ;;; INPUT  : fbf - Formula bien formada (FBF) a analizar.
@@ -306,8 +306,41 @@
 ;;;          N   - FBF es UNSAT
 ;;;
 (defun truth-tree (fbf)
-  )
+  (let lista () )
+  (expand-truth-tree lista fbf))
 
+(defun expand-truth-tree (lista exp)
+  (if (tiene-contradicciones list)
+    NIL
+
+    (if (literal-p (first exp)) ;LITERAL
+      (cons exp list)
+
+      (if (eql (first exp) +and+) ; AND
+        ((let lits lista)
+        (if (null (every #'(lambda (x) (setq lits (expand-truth-tree lits x)) ) (rest exp))) ; añade a nuevos literales por iteracion si es SAT
+          NIL
+          (setq lista (append lista lst))
+        ))
+
+        (if (eql (first exp) +or+) ; OR
+          ((let lits lista)
+          (if (null (some #'(lambda (x) (setq lista (append lista (expand-truth-tree lits x)))) (rest exp))) NIL)) ; siempre añade literales si es SAT
+
+          (if (eql (first exp) +cond+) ; COND =>
+            
+
+
+
+          )
+        )
+      )
+    )
+  )
+)
+
+
+ (maplist #'(lambda (x) (cons 'foo x)) '(a b c d))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJERCICIO 5
@@ -328,4 +361,3 @@
 
 (defun shortest-path-improved (end queue net)
   )
-
