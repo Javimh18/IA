@@ -609,97 +609,52 @@
   )
 )
 
-
 (defun expand-truth-tree (lista exp)  ; retorna la lista de literales en ramas (A B (B (!C) C) A)
-  (if (literal-p (first exp))  ; si exp es literal se retorna
-    (first exp)
+  (if (literal-p exp)  ; si exp es literal se retorna
+    exp
 
     (if (eql (first exp) +cond+)   ; =>  ;traduce
-      (expand-truth-tree lista (cons +or+ (cons +not+ (second exp)) (third exp)))
+      (expand-truth-tree lista (list +or+ (list +not+ (second exp)) (third exp)))
 
       (if (eql (first exp) +bicond+)  ; <=> ;traduce
-        (expand-truth-tree lista (cons +and+ (cons +cond+ (second exp) (third exp)) (cons +cond+ (third exp) (second exp))))
+        (expand-truth-tree lista (list +and+ (list +cond+ (second exp) (third exp)) (list +cond+ (third exp) (second exp))))
 
-        (if (eql (first exp) +or+)  ; v ;introduce en la lista los literales independientes listaes((A)) (A v B) => ((A) (A) (B))
-          (append lista (flowor lista (rest exp)))
+        (if (eql (first exp) +or+)  ; v ;introduce en la lista los literales independientes listaes(1 2) (v A B) => (1 2 A B)
+          (setq lista (append lista (flow lista (rest exp))))
 
-          (if (eql (first exp) +and+) ; ^ ;introduce en la lista una lista con los literales listaes((A)) (A ^ B) => ((A) (A B))
-            (append lista (flowand lista (rest exp))))
+          (if (eql (first exp) +and+) ; ^ ;introduce en la lista una lista con los literales listaes(1 2) (^ A B) => (1 2 (A B))
+            (setq lista (append lista (list (flow lista (rest exp))))))
         )
       )
     )
   )
 )
+
+
+(defun flow (lista lits)
+  (if (null lits)
+    nil
+    (cons (expand-truth-tree lista (first lits)) (flow lista (rest lits)))))
+
+
+
 (defun tiene-contradicciones (lista)
-  (contradicciones-rec (first lista) (rest lista)))
+  (contradicciones-rec (first lista) (rest lista) (rest lista)))
   
-(defun contradicciones-rec (elem lista)
-  (if (null elem) T
-    (if (null lista) (contradicciones-rec (first lista) (rest lista))
+(defun contradicciones-rec (elem bucle lits)
+  (if (null lits) T
+    (if (null bucle) (contradicciones-rec (first lits) (rest lits) (rest lits))
       (if (negative-literal-p elem)
         (if (positive-literal-p (first lista))
-          (if (eql (second elem) (first lista))
-            NIL
-          )
-        )
+          (if (eql (second elem) (first lista)) NIL)) ; Si se contradicen elem y el primero de bucle
         (if (positive-literal-p elem)
           (if (negative-literal-p (first lista))
-            (if (eql elem (second (first (lista))))
-              NIL
-            )
-          )
-        )
+            (if (eql elem (second (first (lista)))) NIL)))
         (contradicciones-rec elem (rest lista))
       )
     )
   )
-)
-
-(defun flowor (lista lits)
-  (if (null lits)
-    NIL
-    (cons (list (expand-truth-tree lista (first lits))) (flowor lista (rest lits)))))
-
-
-(defun flowoand (lista lits)
-  (if (null lits)
-    NIL
-    (cons (expand-truth-tree lista (first lits)) (flowor lista (rest lits)))))
-
-
-
-
-  (if (tiene-contradicciones lista)
-    NIL
-
-    (if (literal-p (first exp)) ;LITERAL
-      (cons exp list)
-
-      (if (eql (first exp) +and+) ; AND
-        ((let lits lista)
-        (if (null (every #'(lambda (x) (setq lits (expand-truth-tree lits x)) ) (rest exp))) ; añade a nuevos literales por iteracion si es SAT
-          NIL
-          (setq lista (append lista lst))
-        ))
-
-        (if (eql (first exp) +or+) ; OR
-          ((let lits lista)
-          (if (null (some #'(lambda (x) (setq lista (append lista (expand-truth-tree lits x)))) (rest exp))) NIL)) ; siempre añade literales si es SAT
-
-          (if (eql (first exp) +cond+) ; COND =>
-
-
-
-
-          )
-        )
-      )
-    )
-  )
-)
-
-
- (maplist #'(lambda (x) (cons 'foo x)) '(a b c d))
+) 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJERCICIO 5
