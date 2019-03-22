@@ -151,10 +151,25 @@
 ;;  the cost of travel
 
 (defun f-h-time (state sensors)
-  )
+	(if (null sensors)
+		nil
+		(if (eql state (first (first sensors)))
+			(first (second (first sensors)))
+			(f-h-time state (rest sensors))
+		)
+	)
+ )
 
 (defun f-h-price (state sensors)
-  )
+	(if (null sensors)
+		nil
+		(if (eql state (first (first sensors)))
+			(second (second (first sensors)))
+			(f-h-price state (rest sensors))
+		)
+	)
+ )
+
 ;;
 ;; END: Exercise 1 -- Evaluation of the heuristic
 ;;
@@ -198,7 +213,7 @@
 ;; from the current city to the cities reachable from it by canal navigation.
 ;;
 (defun navigate-canal-time (state canals)
-  )
+ )
 
 (defun navigate-canal-price (state canals)
   )
