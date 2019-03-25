@@ -231,16 +231,7 @@
 
 ;;lista de ciudades a las que se piuede llegar desde state buscando por canales solo, devolviendo el precio que cuesta
 (defun navigate-canal-price (state canals)
-  (if (null canals)
-    NIL
-    (if (eql (first(first canals)) state)
-      (cons (make-action :name 'NAVIGATE-CANAL-PRICE
-                        :origin state
-                        :final (second(first canals))
-                        :cost (second(third(first canals))) ) (navigate-canal-price state (rest canals)) )
-      (navigate-canal-price state (rest canals))
-    )
-  )
+ (navigate state canals #'first 'NAVIGATE-CANAL-PRICE)
 )
 ;;;;;;;;;;;;;;;PRIVATE FUNCTION BY GUILLERMO AND JAVI forbidden-state
 (defun forbidden-state (state forbidden)
@@ -264,29 +255,11 @@
 ;; Note that this function takes as a parameter a list of forbidden cities.
 ;;
 (defun navigate-train-time (state trains forbidden)
-  (if (null trains)
-    NIL
-    (if (and (eql (first(first trains)) state) (forbidden-state (second(first trains)) forbidden) )
-      (cons (make-action :name 'NAVIGATE-TRAIN-TIME
-                        :origin state
-                        :final (second(first trains))
-                        :cost (first(third(first trains))) ) (navigate-train-time state (rest trains) forbidden) )
-      (navigate-train-time state (rest trains) forbidden)
-    )
-  )
+  (navigate state trains #'second 'NAVIGATE-TRAINS-TIME)
 )
 
 (defun navigate-train-price (state trains forbidden)
-  (if (null trains)
-    NIL
-    (if (and (eql (first(first trains)) state) (forbidden-state (second(first trains)) forbidden) )
-      (cons (make-action :name 'NAVIGATE-TRAIN-PRICE
-                        :origin state
-                        :final (second(first trains))
-                        :cost (second(third(first trains))) ) (navigate-train-price state (rest trains) forbidden) )
-      (navigate-train-price state (rest trains) forbidden)
-    )
-  )
+  (navigate state trains #'second 'NAVIGATE-TRAINS-PRICE)
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
