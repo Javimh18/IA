@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;
 ;;    Lab assignment 2: Search
 ;;
 ;;    Solutions
@@ -8,42 +8,42 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;
 ;;    Problem definition
 ;;
 (defstruct problem
   states               ; List of states
   initial-state        ; Initial state
-  f-h                  ; reference to a function that evaluates to the 
+  f-h                  ; reference to a function that evaluates to the
                        ; value of the heuristic of a state
-  f-goal-test          ; reference to a function that determines whether 
-                       ; a state fulfils the goal 
+  f-goal-test          ; reference to a function that determines whether
+                       ; a state fulfils the goal
   f-search-state-equal ; reference to a predictate that determines whether
-                       ; two nodes are equal, in terms of their search state      
-  operators)           ; list of operators (references to functions) to 
+                       ; two nodes are equal, in terms of their search state
+  operators)           ; list of operators (references to functions) to
                        ; generate successors
 ;;
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;
 ;;    Node in search tree
 ;;
-(defstruct node 
+(defstruct node
   state           ; state label
   parent          ; parent node
   action          ; action that generated the current node from its parent
   (depth 0)       ; depth in the search tree
   (g 0)           ; cost of the path from the initial state to this node
   (h 0)           ; value of the heurstic
-  (f 0))          ; g + h 
+  (f 0))          ; g + h
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
-;;    Actions 
+;;
+;;    Actions
 ;;
 (defstruct action
   name              ; Name of the operator that generated the action
@@ -54,8 +54,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
-;;    Search strategies 
+;;
+;;    Search strategies
 ;;
 (defstruct strategy
   name              ; name of the search strategy
@@ -65,20 +65,20 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;
 ;;    END: Define structures
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;
 ;;    BEGIN: Define galaxy
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defparameter *cities* '(Calais Reims Paris Nancy Orleans 
-                                St-Malo Brest Nevers Limoges 
+(defparameter *cities* '(Calais Reims Paris Nancy Orleans
+                                St-Malo Brest Nevers Limoges
                                 Roenne Lyon Toulouse Avignon Marseille))
 
 ;; Origen Destino (tiempo coste)
@@ -102,8 +102,8 @@
     (Lyon Roenne (18.0 25.0))       (Roenne Lyon  (18.0 25.0))
     (Lyon Avignon (30.0 40.0))      (Avignon Lyon (30.0 40.0))
     (Avignon Marseille (16.0 25.0)) (Marseille Avignon (16.0 25.0))
-    (Marseille Toulouse (65.0 120.0)) (Toulouse Marseille (65.0 120.0)))) 
-    
+    (Marseille Toulouse (65.0 120.0)) (Toulouse Marseille (65.0 120.0))))
+
 
 (defparameter *canals*
   '((Reims Calais (75.0 15.0)) (Paris Reims (90.0 10.0))
@@ -116,10 +116,10 @@
 
 
 
-(defparameter *estimate* 
-  '((Calais (0.0 0.0)) (Reims (25.0 0.0)) (Paris (30.0 0.0)) 
+(defparameter *estimate*
+  '((Calais (0.0 0.0)) (Reims (25.0 0.0)) (Paris (30.0 0.0))
     (Nancy (50.0 0.0)) (Orleans (55.0 0.0)) (St-Malo (65.0 0.0))
-    (Nantes (75.0 0.0)) (Brest (90.0 0.0)) (Nevers (70.0 0.0)) 
+    (Nantes (75.0 0.0)) (Brest (90.0 0.0)) (Nevers (70.0 0.0))
     (Limoges (100.0 0.0)) (Roenne (85.0 0.0)) (Lyon (105.0 0.0))
     (Toulouse (130.0 0.0)) (Avignon (135.0 0.0)) (Marseille (145.0 0.0))))
 
@@ -132,7 +132,7 @@
 (defparameter *mandatory* '(Paris))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;
 ;; BEGIN: Exercise 1 -- Evaluation of the heuristics
 ;;
 ;; Returns the value of the heuristics for a given state
@@ -147,8 +147,8 @@
 ;;  Returns:
 ;;    The cost (a number) or NIL if the state is not in the sensor list
 ;;
-;;  It is necessary to define two functions: the first which returns the 
-;;  estimate of teh travel time, the second which returns the estimate of 
+;;  It is necessary to define two functions: the first which returns the
+;;  estimate of teh travel time, the second which returns the estimate of
 ;;  the cost of travel
 
 (defun f-h-time (state sensors)
@@ -188,64 +188,106 @@
 ;;  Returns the actions that can be carried out from the current state
 ;;
 ;;  Input:
-;;    state:      the state from which we want to perform the action 
-;;    lst-edges:  list of edges of the graph, each element is of the 
+;;    state:      the state from which we want to perform the action
+;;    lst-edges:  list of edges of the graph, each element is of the
 ;;                form: (source destination (cost1 cost2))
 ;;    c-fun:      function that extracts the correct cost (time or price)
 ;;                from the pair that appears in the edge
-;;    name:       name to be given to the actions that are created (see the 
+;;    name:       name to be given to the actions that are created (see the
 ;;                action structure)
-;;    forbidden-cities:  
+;;    forbidden-cities:
 ;;                list of the cities where we can't arrive by train
 ;;
 ;;  Returns
 ;;    A list of action structures with the origin in the current state and
 ;;    the destination in the states to which the current one is connected
 ;;
-(defun navigate (state lst-edges cfun  name &optional forbidden )
+(defun navigate (state lst-edges cfun name &optional forbidden )
+  (if (null lst-edges)
+    NIL
+    (if (and (eql (first(first lst-edges)) state) (forbidden-state (second(first lst-edges)) forbidden) )
+      (cons (make-action :name name
+                        :origin state
+                        :final (second(first lst-edges))
+                        :cost (funcall cfun (third(first lst-edges)) ) ) (navigate state (rest lst-edges) cfun name forbidden))
+      (navigate state (rest lst-edges) cfun name forbidden)
+    )
   )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; Navigation by canal
 ;;
-;; This is a specialization of the general navigation function: given a 
+;; This is a specialization of the general navigation function: given a
 ;; state and a list of canals, returns a list of actions to navigate
 ;; from the current city to the cities reachable from it by canal navigation.
 ;;
 
 ;;lista de ciudades a las que se piuede llegar desde state buscando por canales solo, devolviendo el tiempo que tarda
 (defun navigate-canal-time (state canals)
-  (if (null canals)
-    NIL
-    (if (eql (first(first canals)) state)
-      (cons make-action :name 'NAVIGATE-CANAL-TIME
-                        :origin state
-                        :final (first(second canals))
-                        :cost (first(third(first canals))) (navigate-canal-time state (rest canals)) )
-    )
-  )
+  (navigate state canals #'first 'NAVIGATE-CANAL-TIME)
 )
 
 ;;lista de ciudades a las que se piuede llegar desde state buscando por canales solo, devolviendo el precio que cuesta
 (defun navigate-canal-price (state canals)
+  (if (null canals)
+    NIL
+    (if (eql (first(first canals)) state)
+      (cons (make-action :name 'NAVIGATE-CANAL-PRICE
+                        :origin state
+                        :final (second(first canals))
+                        :cost (second(third(first canals))) ) (navigate-canal-price state (rest canals)) )
+      (navigate-canal-price state (rest canals))
+    )
   )
+)
+;;;;;;;;;;;;;;;PRIVATE FUNCTION BY GUILLERMO AND JAVI forbidden-state
+(defun forbidden-state (state forbidden)
+  (if (null forbidden)
+    T
+    (if (eql (first forbidden) state)
+      NIL
+      (forbidden-state state (rest forbidden))
+    )
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; Navigation by train
 ;;
-;; This is a specialization of the general navigation function: given a 
+;; This is a specialization of the general navigation function: given a
 ;; state and a list of train lines, returns a list of actions to navigate
 ;; from the current city to the cities reachable from it by train.
-;; 
+;;
 ;; Note that this function takes as a parameter a list of forbidden cities.
 ;;
 (defun navigate-train-time (state trains forbidden)
+  (if (null trains)
+    NIL
+    (if (and (eql (first(first trains)) state) (forbidden-state (second(first trains)) forbidden) )
+      (cons (make-action :name 'NAVIGATE-TRAIN-TIME
+                        :origin state
+                        :final (second(first trains))
+                        :cost (first(third(first trains))) ) (navigate-train-time state (rest trains) forbidden) )
+      (navigate-train-time state (rest trains) forbidden)
+    )
   )
-  
+)
+
 (defun navigate-train-price (state trains forbidden)
+  (if (null trains)
+    NIL
+    (if (and (eql (first(first trains)) state) (forbidden-state (second(first trains)) forbidden) )
+      (cons (make-action :name 'NAVIGATE-TRAIN-PRICE
+                        :origin state
+                        :final (second(first trains))
+                        :cost (second(third(first trains))) ) (navigate-train-price state (rest trains) forbidden) )
+      (navigate-train-price state (rest trains) forbidden)
+    )
   )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -270,7 +312,7 @@
 ;;    NIL: invalid path: either the final city is not a destination or some
 ;;         of the mandatory cities are missing from the path.
 ;;
-(defun f-goal-test (node destination mandatory) 
+(defun f-goal-test (node destination mandatory)
   )
 
 ;;
@@ -288,7 +330,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; Determines if two nodes are equivalent with respect to the solution
-;; of the problem: two nodes are equivalent if they represent the same city 
+;; of the problem: two nodes are equivalent if they represent the same city
 ;, and if the path they contain includes the same mandatory cities.
 ;;  Input:
 ;;    node-1, node-1: the two nodes that we are comparing, each one
@@ -317,18 +359,18 @@
 ;;  operators, each one takes a single parameter: a state name, and
 ;;  returns a list of actions, indicating to which states one can move
 ;;  and at which cost. The lists of edges are placed as constants as
-;;  the second parameter of the navigate operators. 
+;;  the second parameter of the navigate operators.
 ;;
 ;;  There are two problems defined: one minimizes the travel time,
 ;;  the other minimizes the cost
 
-(defparameter *travel-cheap* 
-  (make-problem 
+(defparameter *travel-cheap*
+  (make-problem
    )
   )
 
-(defparameter *travel-fast* 
-  (make-problem 
+(defparameter *travel-fast*
+  (make-problem
    )
   )
 
@@ -360,7 +402,7 @@
 ;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;
 ;;  Creates a list with all the nodes that can be reached from the
 ;;  current one using all the operators in a given problem
 ;;
@@ -378,7 +420,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;  BEGIN Exercise 7 -- Node list management
-;;;  
+;;;
 ;;;  Merges two lists of nodes, one of them ordered with respect to a
 ;;;  given strategy, keeping the result ordered with respect to the
 ;;;  same strategy.
@@ -401,7 +443,7 @@
 ;;;  second, insert-nodes, insert the nodes of the non-ordered list
 ;;;  into the ordered, one by one, so that the two lists are merged.
 ;;;  The last function, insert-node-strategy is a simple interface that
-;;;  receives a strategy, extracts from it the comparison function, 
+;;;  receives a strategy, extracts from it the comparison function,
 ;;;  and calls insert-nodes
 
 
@@ -413,16 +455,16 @@
 ;; Input:
 ;;    nodes: the (possibly unordered) node list to be inserted in the
 ;;           other list
-;;    lst-nodes: the (ordered) list of nodes in which the given nodes 
+;;    lst-nodes: the (ordered) list of nodes in which the given nodes
 ;;               are to be inserted
-;;    node-compare-p: a function node x node --> 2 that returns T if the 
+;;    node-compare-p: a function node x node --> 2 that returns T if the
 ;;                    first node comes first than the second.
 ;;
 ;; Returns:
-;;    An ordered list of nodes which includes the nodes of lst-nodes and 
-;;    those of the list "nodes@. The list is ordered with respect to the 
+;;    An ordered list of nodes which includes the nodes of lst-nodes and
+;;    those of the list "nodes@. The list is ordered with respect to the
 ;;   criterion node-compare-p.
-;; 
+;;
 (defun insert-nodes (nodes lst-nodes node-compare-p)
   )
 
@@ -434,16 +476,16 @@
 ;; Input:
 ;;    nodes: the (possibly unordered) node list to be inserted in the
 ;;           other list
-;;    lst-nodes: the (ordered) list of nodes in which the given nodes 
+;;    lst-nodes: the (ordered) list of nodes in which the given nodes
 ;;               are to be inserted
 ;;    strategy: the strategy that gives the criterion for node
 ;;              comparison
 ;;
 ;; Returns:
-;;    An ordered list of nodes which includes the nodes of lst-nodes and 
-;;    those of the list "nodes@. The list is ordered with respect to the 
+;;    An ordered list of nodes which includes the nodes of lst-nodes and
+;;    those of the list "nodes@. The list is ordered with respect to the
 ;;    criterion defined in te strategy.
-;; 
+;;
 ;; Note:
 ;;   You will note that this function is just an interface to
 ;;   insert-nodes: it allows to call using teh strategy as a
@@ -464,8 +506,8 @@
 ;;
 ;; BEGIN: Exercise 8 -- Definition of the A* strategy
 ;;
-;; A strategy is, basically, a comparison function between nodes to tell 
-;; us which nodes should be analyzed first. In the A* strategy, the first 
+;; A strategy is, basically, a comparison function between nodes to tell
+;; us which nodes should be analyzed first. In the A* strategy, the first
 ;; node to be analyzed is the one with the smallest value of g+h
 ;;
 (defparameter *A-star*
@@ -477,7 +519,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; 
+;;;
 ;;;    BEGIN Exercise 9: Search algorithm
 ;;;
 ;;;    Searches a path that solves a given problem using a given search
@@ -511,7 +553,7 @@
 ;;  Auxiliary search function (the one that actually does all the work
 ;;
 ;;  Input:
-;;    problem: the problem structure from which we get the general 
+;;    problem: the problem structure from which we get the general
 ;;             information (goal testing function, action operatos, etc.
 ;;    open-nodes: the list of open nodes, nodes that are waiting to be
 ;;                visited
@@ -536,10 +578,10 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;;  Interface function for the graph search. 
+;;  Interface function for the graph search.
 ;;
 ;;  Input:
-;;    problem: the problem structure from which we get the general 
+;;    problem: the problem structure from which we get the general
 ;;             information (goal testing function, action operatos,
 ;;             starting node, heuristic, etc.
 ;;    strategy: the strategy that decide which node is the next extracted
@@ -550,7 +592,7 @@
 ;;     If these is a path, returns the node containing the final state.
 ;;
 ;;    See the graph-search-aux for the complete structure of the
-;;    returned node. 
+;;    returned node.
 ;;    This function simply prepares the data for the auxiliary
 ;;    function: creates an open list with a single node (the source)
 ;;    and an empty closed list.
@@ -572,7 +614,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; 
+;;;
 ;;;    BEGIN Exercise 10: Solution path
 ;;;
 ;*** solution-path ***
@@ -586,7 +628,7 @@
 (defun action-sequence (node)
   )
 
-;;; 
+;;;
 ;;;    END Exercise 10: Solution path / action sequence
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -696,20 +738,20 @@
 ;;
 ;; Exercise 6:
 ;;
-;; NOTE: In order to run the tests from this point on, you must 
-;; have solved exercise 5, that is, you must have created the 
+;; NOTE: In order to run the tests from this point on, you must
+;; have solved exercise 5, that is, you must have created the
 ;; structures *travel-ceap* and *travel-fast*
 ;;
 ;; ALSO NOTE: The output of tehse examples is "as is", the same as
-;; it appears on the allegro console. The console "cuts" some of 
-;; the outputs when these are too complex. Your output might be 
+;; it appears on the allegro console. The console "cuts" some of
+;; the outputs when these are too complex. Your output might be
 ;; slightly diffferent than this one.
 
 (defparameter node-marseille-ex6
    (make-node :state 'Marseille :depth 12 :g 10 :f 20) )
 
 (defparameter lst-nodes-ex6
-  (expand-node node-marseille-ex6 *travel-fast*)) 
+  (expand-node node-marseille-ex6 *travel-fast*))
 
 (print lst-nodes-ex6) ; ->
 ;(#S(NODE :STATE TOULOUSE
@@ -740,7 +782,7 @@
 ;         :DEPTH 13
 ;        :G 75.0
 ;         :H 130.0
-;         :F 205.0)) 
+;         :F 205.0))
 ;(#S(NODE :STATE TOULOUSE
 ;         :PARENT #S(NODE
 ;                    :STATE
@@ -788,7 +830,7 @@
   (make-node :state 'Nancy :depth 2 :g 50 :f 50) )
 
 
-(defparameter sol-ex7 (insert-nodes-strategy (list node-paris-ex7 node-nancy-ex7) 
+(defparameter sol-ex7 (insert-nodes-strategy (list node-paris-ex7 node-nancy-ex7)
                                              lst-nodes-ex6
                                              *uniform-cost*))
 
@@ -1024,5 +1066,3 @@
 ;           :ORIGIN REIMS
 ;           :FINAL CALAIS
 ;           :COST 15.0))
-
-
