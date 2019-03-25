@@ -81,6 +81,7 @@
                                 St-Malo Brest Nevers Limoges 
                                 Roenne Lyon Toulouse Avignon Marseille))
 
+;; Origen Destino (tiempo coste)
 (defparameter *trains*
   '((Paris Calais (34.0 60.0))      (Calais Paris (34.0 60.0))
     (Reims Calais (35.0 70.0))      (Calais Reims (35.0 70.0))
@@ -212,9 +213,12 @@
 ;; state and a list of canals, returns a list of actions to navigate
 ;; from the current city to the cities reachable from it by canal navigation.
 ;;
+
+;;lista de ciudades a las que se piuede llegar desde state buscando por canales solo, devolviendo el tiempo que tarda
 (defun navigate-canal-time (state canals)
  )
 
+;;lista de ciudades a las que se piuede llegar desde state buscando por canales solo, devolviendo el precio que cuesta
 (defun navigate-canal-price (state canals)
   )
 
