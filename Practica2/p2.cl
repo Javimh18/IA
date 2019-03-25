@@ -216,7 +216,16 @@
 
 ;;lista de ciudades a las que se piuede llegar desde state buscando por canales solo, devolviendo el tiempo que tarda
 (defun navigate-canal-time (state canals)
- )
+  (if (null canals)
+    NIL
+    (if (eql (first(first canals)) state)
+      (cons make-action :name 'NAVIGATE-CANAL-TIME
+                        :origin state
+                        :final (first(second canals))
+                        :cost (first(third(first canals))) (navigate-canal-time state (rest canals)) )
+    )
+  )
+)
 
 ;;lista de ciudades a las que se piuede llegar desde state buscando por canales solo, devolviendo el precio que cuesta
 (defun navigate-canal-price (state canals)
