@@ -231,7 +231,7 @@
 
 ;;lista de ciudades a las que se piuede llegar desde state buscando por canales solo, devolviendo el precio que cuesta
 (defun navigate-canal-price (state canals)
- (navigate state canals #'first 'NAVIGATE-CANAL-PRICE)
+ (navigate state canals #'second 'NAVIGATE-CANAL-PRICE)
 )
 ;;;;;;;;;;;;;;;PRIVATE FUNCTION BY GUILLERMO AND JAVI forbidden-state
 (defun forbidden-state (state forbidden)
@@ -255,17 +255,51 @@
 ;; Note that this function takes as a parameter a list of forbidden cities.
 ;;
 (defun navigate-train-time (state trains forbidden)
-  (navigate state trains #'second 'NAVIGATE-TRAINS-TIME)
+  (navigate state trains #'first 'NAVIGATE-TRAINS-TIME forbidden)
 )
 
 (defun navigate-train-price (state trains forbidden)
-  (navigate state trains #'second 'NAVIGATE-TRAINS-PRICE)
+  (navigate state trains #'second 'NAVIGATE-TRAINS-PRICE forbidden)
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; BEGIN: Exercise 3 -- Goal test
 ;;
+
+;;FUNCION PRIVADA. Indica si el state de nodo se encuentra en la lista destination (T o NIL)
+(defun node-in-destination (node destination)
+  (if (null destination)
+    NIL
+    (if (eql (node-state node) (first destination)) 
+      T
+      (node-in-destination node (rest destination))
+    )
+  )
+) 
+
+;;FUNCION PRIVADA (recursiva para path-check-mandatory). Indica si en el path formado por node y sus padres esta el state mandatory(T o NIL)
+(defun mandatory-in-path(node mandatory)
+  (if (null node) 
+    NIL
+    (if (eql (node-state node) mandatory)
+      T
+      (mandatory-in-path (node-parent node) mandatory)
+    )
+  )
+)
+
+;;FUNCION PRIVADA.  Indica si el path formado por node y sus padres pasa por todos los states de la lista mandatory (T o NIL)
+(defun path-check-mandatory(node mandatory)
+  (if (null mandatory)
+    T
+    (and
+      (mandatory-in-path node (first mandatory))
+      (path-check-mandatory node (rest mandatory))
+    )
+  )
+)
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -286,7 +320,11 @@
 ;;         of the mandatory cities are missing from the path.
 ;;
 (defun f-goal-test (node destination mandatory)
+  (and 
+    (node-in-destination node destination)
+    (path-check-mandatory node mandatory)
   )
+)
 
 ;;
 ;; END: Exercise 3 -- Goal test
@@ -299,6 +337,16 @@
 ;; BEGIN: Exercise 4 -- Equal predicate for search states
 ;;
 
+;;FUNCION PRIVADA. Retorna una lista con las ciudades de la lista mandatory que quedan por visitar
+(defun missing-mandatory (node mandatory)
+  (if (null mandatory)
+    NIL
+    (if (mandatory-in-path node (first mandatory)) ;comprueba que firstmandatory esta en el path de node 
+      (missing-mandatory node (rest mandatory))
+      (cons (first mandatory) (missing-mandatory node (rest mandatory)))
+    )
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -315,7 +363,14 @@
 ;;    NIL: The nodes are not equivalent
 ;;
 (defun f-search-state-equal (node-1 node-2 &optional mandatory)
+  (if (not (eql (node-state node-1) (node-state node-2)))
+    NIL
+    (if (equal (missing-mandatory node-1 mandatory) (missing-mandatory node-2 mandatory))
+      T
+      NIL
+    )
   )
+)
 
 ;;
 ;; END: Exercise 4 -- Equal predicate for search states
@@ -339,13 +394,25 @@
 
 (defparameter *travel-cheap*
   (make-problem
-   )
-  )
+    :states *cities*
+    :initial-state *origin*
+    :f-h                    #'(lambda (state) (f-h-price state *estimate*))
+    :f-goal-test            #'(lambda (node) (f-goal-test node *destination* *mandatory*))
+    :f-search-state-equal   #'(lambda (node-1 node-2) (f-search-state-equal node-1 node-2 *mandatory*))
+    :operators (list
+                            #'(lambda (node) (navigate-canal-price node *canals*))
+                            #'(lambda (node) (navigate-train-price node *trains* *forbidden*)))))
 
 (defparameter *travel-fast*
   (make-problem
-   )
-  )
+    :states *cities*
+    :initial-state *origin*
+    :f-h                    #'(lambda (state) (f-h-time state *estimate*))
+    :f-goal-test            #'(lambda (node) (f-goal-test node *destination* *mandatory*))
+    :f-search-state-equal   #'(lambda (node-1 node-2) (f-search-state-equal node-1 node-2 *mandatory*))
+    :operators (list
+                            #'(lambda (node) (navigate-canal-time node *canals*))
+                            #'(lambda (node) (navigate-train-time node *trains* *forbidden*)))))
 
 ;;
 ;;  END: Exercise 5 -- Define the problem structure
