@@ -255,11 +255,11 @@
 ;; Note that this function takes as a parameter a list of forbidden cities.
 ;;
 (defun navigate-train-time (state trains forbidden)
-  (navigate state trains #'first 'NAVIGATE-TRAINS-TIME forbidden)
+  (navigate state trains #'first 'NAVIGATE-TRAIN-TIME forbidden)
 )
 
 (defun navigate-train-price (state trains forbidden)
-  (navigate state trains #'second 'NAVIGATE-TRAINS-PRICE forbidden)
+  (navigate state trains #'second 'NAVIGATE-TRAIN-PRICE forbidden)
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -440,6 +440,21 @@
 ;; that creates a node structure with the node that can be reached
 ;; using that action.
 ;;
+(defun expand-node-action (node problem action)
+  (if (or (null action) (null problem))
+    NIL
+    (let ( (g (+ (node-g node) (action-cost action))) (h (funcall (problem-f-h problem) (action-final action))) );guardamos g y h para calcular f 
+      (make-node  :state (action-final action)
+                  :parent node
+                  :action action
+                  :depth (+ 1 (node-depth node))
+                  :g g
+                  :h h
+                  :f (+ g h)
+      )
+    )
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -455,7 +470,14 @@
 ;;    given one
 ;;
 (defun expand-node (node problem)
+  (if (or (null node) (null problem))
+    NIL
+    (let     ;guarda en la lista actions las salidas de las llamadas a los operators de problem con nodestate como argumento 
+      ( (actions (mapcan #'(lambda (fun) (funcall fun (node-state node))) (problem-operators problem))) )                                
+      (mapcar #'(lambda (action) (expand-node-action node problem action)) actions)
+    ) ;traducimos todas estas acciones a nodos
   )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -486,6 +508,16 @@
 ;;;  receives a strategy, extracts from it the comparison function,
 ;;;  and calls insert-nodes
 
+;FUNCION PRIVADA. Inserta el nodo node en la lista ordenada lst-nodes sin desordenarla
+(defun insert-node (node lst-nodes node-compare-p)
+  (if (null lst-nodes)  ;lista vacia retorna lista con node
+    (cons node lst-nodes)
+    (if (funcall node-compare-p node (first lst-nodes)); si cumple la comparacion de node con el primero de la lista, mete node al principio
+      (cons node lst-nodes)
+      (cons (first lst-nodes) (insert-node node (rest lst-nodes) node-compare-p)) ;si no, concatena el pprimero de la lista con la llamada recursiva
+    )                                                                             ;de esta manera ira avanzando la lista hasta llegar a su posicion
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -506,7 +538,11 @@
 ;;   criterion node-compare-p.
 ;;
 (defun insert-nodes (nodes lst-nodes node-compare-p)
+  (if (null nodes)
+    lst-nodes
+    (insert-nodes (rest nodes) (insert-node (first nodes) lst-nodes node-compare-p) node-compare-p)
   )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -533,7 +569,10 @@
 ;;   use it to call insert-nodes.
 ;;
 (defun insert-nodes-strategy (nodes lst-nodes strategy)
-  )
+  (if (null strategy)
+    NIL
+    (insert-nodes nodes lst-nodes (strategy-node-compare-p strategy)))
+)
 
 ;;
 ;;    END: Exercize 7 -- Node list management
