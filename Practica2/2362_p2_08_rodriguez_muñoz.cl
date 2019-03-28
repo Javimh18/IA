@@ -663,12 +663,15 @@
 ;;     whole path from the starting node to the final.
 ;;
 
-(defun funcion (node closed-nodes problem)
+(defun aux (node closed-nodes problem)
   (if (null closed-nodes)
     T
     (if (funcall (problem-f-search-state-equal problem) node (first closed-nodes))
       (< (node-g node) (node-g (first closed-nodes)))
-      (funcion node (rest closed-nodes) problem))))
+      (aux node (rest closed-nodes) problem)
+    )
+  )
+)
 
 (defun graph-search-aux (problem open-nodes closed-nodes strategy)
   (if (null open-nodes)
@@ -676,14 +679,13 @@
     (let ( (nodo (first open-nodes)) )
       (if (funcall (problem-f-goal-test problem) nodo); el nodo cumple f-goal-test y es solucion
         nodo
-        (if (null (funcion nodo closed-nodes problem))
+        (if (null (aux nodo closed-nodes problem))
           (graph-search-aux problem (rest open-nodes) closed-nodes strategy)
           (graph-search-aux problem 
             (insert-nodes-strategy 
               (expand-node nodo problem) (rest open-nodes) strategy) 
             (cons nodo closed-nodes) strategy
           )
-
         )
       )
     )

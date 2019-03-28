@@ -1,0 +1,26 @@
+CUESTIONES
+1¿Por qué se ha realizado este diseño para resolver el problema de búsqueda?
+
+Porque es un diseño eficiente. Por una parte, este diseño evalua los costes y permite conocer los caminos que forman los nodos. Ademas, dado que es un problema que claramente utiliza muchas listas (ciudades prohibidas, ciudades obligatorias, ciudades poe visitar), lisp es un lenguaje idoneo para optimizar las busquedas. Por otro lado tiene en cuenta ambas heuristicas: tiempo y coste. Y tambien es eficiente el trabajar con estructuras que nos son muy pesadas pero que tienen mucha potencia como pueden ser los caminos que crean los nodos con sus padres, o todos los tipos de operadores.
+
+
+2.En concreto,
+a. ¿Qué ventajas aporta?
+El uso de todas estas estructuras, hacen que el diseño sea muy versatil. Aun siendo estructuras tan simples, podemos trabajar sobre diferentes heuristicas y sobre diferentes transportes (tren o barco).
+
+b. ¿Por qué se han utilizado funciones lambda para especificar el testobjetivo, la heurística y los operadores del problema? 
+Porque hacen que el diseño sea menos pesado y mas generico, de manera que independientemente del transporte o la heuristica podemas resolver el problema con un unico diseño. Ademas es muy comodo a la hora de trabajar con listas.
+
+
+3.Sabiendo que en cada nodo de búsqueda hay un campo “parent”, que proporciona una referencia al nodo a partir del cual se ha generado el actual ¿es eficiente el uso de memoria?
+
+Si es eficiente. Aunque podrian existir algun otro tipo de algoritmo en la que no fuese necesario guardar las referencias en estructuras, siempre habra que de alguna forma poder acceder a ellas. En el caso de nuestro diseño, simplemente se guarda la referencia al nodo parent para poder comprobar en las busquedas los caminos. Esto siempre sera mas eficiente que hacer copias de nodos, o tener el camino entero en la estructura 
+
+4.¿Cuál es la complejidad espacial del algoritmo implementado? 
+
+La complejidad espacial para el algoritmo A* seria: 
+
+
+5.¿Cuál es la complejidad temporal del algoritmo?
+
+La complejidad temporal para el algoritmo A* coincide con la espacial y seria: 
