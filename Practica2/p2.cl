@@ -913,8 +913,8 @@
                                              lst-nodes-ex6
                                              *uniform-cost*))
 
-(mapcar #'(lambda (x) (node-state x)) sol-ex6) ; -> (PARIS NANCY TOULOUSE)
-(mapcar #'(lambda (x) (node-g x)) sol-ex6) ; -> (0 50 75)
+(mapcar #'(lambda (x) (node-state x)) sol-ex7) ; -> (PARIS NANCY TOULOUSE)
+(mapcar #'(lambda (x) (node-g x)) sol-ex7) ; -> (0 50 75)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
