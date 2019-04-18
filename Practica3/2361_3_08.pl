@@ -68,3 +68,43 @@ next_factor(N, F, NF):-
 	NF is F+2.
 next_factor(N, _, N):-
     N > 2.
+
+% ejercicio 7
+
+% 7.1
+% caso base
+cod_primero(X, [], [], [X|[]]).
+% caso en el que los valores del array coincidan.
+cod_primero(X, [X|L], Lrem, [X|Lfront]) :-
+    cod_primero(X, L, Lrem, Lfront).
+
+% caso en el que los valores del array NO coincidan.
+cod_primero(X, [Y|L], [Y|Lrem], Lfront) :-
+    (cod_primero(X, L, Lrem, Lfront)).
+
+% 7.2
+% caso base
+cod_all([], []).
+
+cod_all([X|L], [Lfront|L1]):-
+    cod_primero(X, L, Lrem, Lfront),
+    cod_all(Lrem, L1).
+
+% 7.3
+% función auxiliar
+firstL([], []).
+firstL([X|_], X).
+
+% caso base
+run_length_analyze([], []).
+
+run_length_analyze([Lfront|Lres], [R|L1]):-
+    length(Lfront, N),
+	firstL(Lfront, Y),
+    concatena([N], [Y], R),
+    run_length_analyze(Lres, L1).
+
+run_length([], []).
+run_length(L, L1):-
+    cod_all(L, Lres),
+	run_length_analyze(Lres, L1).
