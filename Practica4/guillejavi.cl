@@ -1,12 +1,9 @@
-(use-package 'conecta4)
-
-(declaim #+sbcl(sb-ext:muffle-conditions style-warning))
-
-;; -------------------------------------------------------------------------------
-;; Funciones de evaluación
-;; -------------------------------------------------------------------------------
-
-(defun f-eval-bueno (estado)
+(defpackage :2361_P04_63f48
+(:use :common-lisp :conecta4) ; el paquete usa common-lisp y conecta4
+(:export :heuristica :*alias*)) ; exporta la función de evaluación y un alias
+(in-package 2361_P04_63f48)
+(defvar *alias* '|GuilleJaviFlow|) ; alias que aparece en el ranking
+(defun heuristica (estado)
   ; current player standpoint
   (let* ((tablero (estado-tablero estado))
 	 (ficha-actual (estado-turno estado))
@@ -33,15 +30,15 @@
 			 (cond ((= abajo 0) 0)
 			       ((= abajo 1) 10)
 			       ((= abajo 2) 100)
-			       ((= abajo 3) 5000))
+			       ((= abajo 3) 1000))
 			 (cond ((= der 0) 0)
 			       ((= der 1) 10)
 			       ((= der 2) 100)
-			       ((= der 3) 5000))
+			       ((= der 3) 1000))
 			 (cond ((= izq 0) 0)
 			       ((= izq 1) 10)
 			       ((= izq 2) 100)
-			       ((= izq 3) 5000))
+			       ((= izq 3) 1000))
 			 (cond ((= abajo-izq 0) 0)
 			       ((= abajo-izq 1) 10)
 			       ((= abajo-izq 2) 100)
@@ -60,50 +57,17 @@
 			 (cond ((= abajo 0) 0)
 			       ((= abajo 1) 10)
 			       ((= abajo 2) 100)
-			       ((= abajo 3) 5000))
+			       ((= abajo 3) 1000))
 			 (cond ((= der 0) 0)
 			       ((= der 1) 10)
 			       ((= der 2) 100)
-			       ((= der 3) 5000))
+			       ((= der 3) 1000))
 			 (cond ((= izq 0) 0)
 			       ((= izq 1) 10)
 			       ((= izq 2) 100)
-			       ((= izq 3) 5000))
+			       ((= izq 3) 1000))
 			 (cond ((= abajo-izq 0) 0)
 			       ((= abajo-izq 1) 10)
 			       ((= abajo-izq 2) 100)
-			       ((= abajo-izq 3) 5000))))))
+			       ((= abajo-izq 3) 1000))))))
 	(- puntuacion-actual puntuacion-oponente)))))
-
-;; -------------------------------------------------------------------------------
-;; Jugadores
-;; -------------------------------------------------------------------------------
-
-(defvar *jugador-aleatorio* (make-jugador :nombre 'Jugador-aleatorio
-					  :f-jugador #'f-jugador-aleatorio
-					  :f-eval  #'f-eval-aleatoria))
-
-(defvar *jugador-bueno* (make-jugador :nombre 'Jugador-bueno
-				      :f-jugador #'f-jugador-negamax
-				      :f-eval  #'f-eval-bueno))
-
-(defvar *jugador-humano* (make-jugador :nombre 'Jugador-humano
-				       :f-jugador #'f-jugador-humano
-				       :f-eval  #'f-no-eval))
-
-;; -------------------------------------------------------------------------------
-;; Algunas partidas de ejemplo:
-;; -------------------------------------------------------------------------------
-
-(setf *verbose* t)
-
-;(print (partida *jugador-aleatorio* *jugador-aleatorio*))
-;(print (partida *jugador-aleatorio* *jugador-bueno* 4))
-;(print (partida *jugador-bueno* *jugador-aleatorio* 4))
-;(print (partida *jugador-bueno* *jugador-bueno* 4))
-;(print (partida *jugador-humano* *jugador-humano*))
-;(print (partida *jugador-humano* *jugador-aleatorio* 4))
-(print (partida *jugador-humano* *jugador-bueno* 4))
-;(print (partida *jugador-aleatorio* *jugador-humano*))
-
-;;
