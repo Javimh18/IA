@@ -12,11 +12,11 @@ concatena([X|L1], L2, [X|L3]) :-
 invierte([], []).
 invierte([X|L], R) :- 
 	invierte(L, S),
-	append(S, [X], R).
+	concatena(S, [X], R).
 
 % ejercicio 3
 
-palindromo[L] :- invierte(L, L).
+palindromo([L]) :- invierte(L, L).
 
 % ejercicio 4
 
@@ -51,7 +51,7 @@ primos(N, L):-
     N > 1,
     primos_rec(N, 2, L).
 
-% necesitoo un caso baseeeee
+
 primos_rec(1, _, []).
 primos_rec(N, F, [F|L]):-
     0 is N mod F,
