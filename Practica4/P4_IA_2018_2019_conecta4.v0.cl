@@ -10,30 +10,30 @@
 	   :jugador
 	   :make-jugador
 	   :jugador-nombre
-	   :copiar-tablero 
-	   :muestra-tablero 
-	   :columnas-jugables 
-	   :poner-ficha 
-	   :obtener-ficha 
-	   :altura-columna 
-	   :ganador-tablero 
+	   :copiar-tablero
+	   :muestra-tablero
+	   :columnas-jugables
+	   :poner-ficha
+	   :obtener-ficha
+	   :altura-columna
+	   :ganador-tablero
 	   :dentro-del-tablero-p
-	   :contar-abajo 
-	   :contar-arriba 
+	   :contar-abajo
+	   :contar-arriba
 	   :contar-derecha
-	   :contar-izquierda 
-	   :contar-abajo-derecha 
-	   :contar-abajo-izquierda 
-	   :contar-arriba-derecha 
-	   :contar-arriba-izquierda 
-	   :copiar-estado 
-	   :acciones-posibles 
-	   :siguiente-jugador 
-	   :ejecutar-accion 
+	   :contar-izquierda
+	   :contar-abajo-derecha
+	   :contar-abajo-izquierda
+	   :contar-arriba-derecha
+	   :contar-arriba-izquierda
+	   :copiar-estado
+	   :acciones-posibles
+	   :siguiente-jugador
+	   :ejecutar-accion
 	   :generar-sucesores
 	   :juego-terminado-p
-	   :tablas-p 
-	   :ganador 
+	   :tablas-p
+	   :ganador
 	   :elegir-accion
 	   :*verbose*
 	   :partida
@@ -86,11 +86,15 @@
   ancho
   casillas)
 
+;; copia el tablero actual en uno nuevo, para eso usa el constructor "make-tablero"
+;; el cual además guarda las propiedas de alto y ancho, y luego copia el "array" donde se
+;; guarda el tablero en el nuevo array.
 (defun copiar-tablero (tablero)
   (make-tablero :alto (tablero-alto tablero)
 		:ancho (tablero-ancho tablero)
 		:casillas (copy-array (tablero-casillas tablero))))
 
+;; funcion que muestra el tablero del conecta4 (6x7)
 (defun muestra-tablero (tablero)
   (format t "~%~%")
   (loop for j from 0 below (tablero-ancho tablero) do
@@ -113,6 +117,10 @@
 	(format t " [~S]" j))
   (format t "~%"))
 
+;; función que busca, dado el tablero que columnas son jugables y cuales no,
+;; para ello busca primero cuales son las columnas que están libres buscando
+;; cuales son las casillas que están a null, y devolviendo por tanto dicha columna
+;; (las casillas por lo general se inicializan a NIL).
 (defun columnas-jugables (tablero)
   (let (columnas-libres)
     (loop for i from (1- (tablero-ancho tablero)) downto 0 do
@@ -120,19 +128,30 @@
 	      (setf columnas-libres (cons i columnas-libres))))
     columnas-libres))
 
+;; función que coloca una ficha de un jugador en una columna del tablero.
 (defun poner-ficha (tablero columna ficha)
   (let ((altura (altura-columna tablero columna)))
     (setf (aref (tablero-casillas tablero) altura columna) ficha)))
 
+;; funcion que retorna una ficha en un tablero, la idea es que se le pase una
+;; columna y una fila (altura de la ficha en el tablero) y esta retorne la ficha que se encuentra
+;; en dicha posición
 (defun obtener-ficha (tablero columna fila)
   (aref (tablero-casillas tablero) fila columna))
 
+;; función que devuelve la altura actual a la que está la columna, es decir,
+;; cuantas fichas hay por debajo de ella, para ello recorre una columna dada, y
+;; con  un contador va chequea que no sea null. Cuando lo es, para.
 (defun altura-columna (tablero columna)
   (loop for altura from 0 below (tablero-alto tablero) do
 	(if (null (aref (tablero-casillas tablero) altura columna))
 	    (return-from altura-columna altura)))
   (tablero-alto tablero))
 
+;; función que determina cual es el jugador que ha ganado la partida
+;; a partir del tablero proporcionado (el cual es siempre el estado actual)
+;; la gracia de ganar es colocar 4 fichas en línea, ya sea en horizontal, vertical
+;; o diagonal.
 (defun ganador-tablero (tablero)
   (loop for columna from 0 below (tablero-ancho tablero) do
 	(let* ((altura (altura-columna tablero columna)))
@@ -148,24 +167,33 @@
 		      ((>= (contar-diagonal-descendente tablero ficha columna fila) 4)
 		       (return-from ganador-tablero ficha))))))))
 
+;; cuenta las fichas que hay de un tipo determinado en línea, para ello
+;; llama de forma recursiva a contar-derecha y contar izquierda
 (defun contar-horizontal (tablero ficha columna fila)
   (+ (contar-derecha tablero ficha columna fila)
      (contar-izquierda tablero ficha (1- columna) fila)))
 
+;; cuenta las fichas que hay de una columna, para ello
+;; llama de forma recursiva a contar-arriba y contar_abajo
 (defun contar-vertical (tablero ficha columna fila)
   (+ (contar-abajo tablero ficha columna fila)
      (contar-arriba tablero ficha columna (1+ fila))))
-  
+
+;; cuenta las fichas que hay de una diagonal, en este caso ascendente, para ello
+;; llama de forma recursiva a contar-abajo-izquierda y contar-arriba-derecha
 (defun contar-diagonal-ascendente (tablero ficha columna fila)
   (+ (contar-abajo-izquierda tablero ficha columna fila)
      (contar-arriba-derecha tablero ficha (1+ columna) (1+ fila))))
-  
+
+;; cuenta las fichas que hay de una diagonal, en este caso ascendente, para ello
+;; llama de forma recursiva a contar-arriba-izquierda y contar-abajo-derecha
 (defun contar-diagonal-descendente (tablero ficha columna fila)
   (+ (contar-abajo-derecha tablero ficha columna fila)
      (contar-arriba-izquierda tablero ficha (1- columna) (1+ fila))))
 
 ;; ----------------------------------------------------------------------------------------
 
+;; función que chequea que los valores no salen de las medidas del tablero.
 (defun dentro-del-tablero-p (tablero columna fila)
   (and (>= columna 0)
        (>= fila 0)
@@ -174,48 +202,64 @@
 
 ;(trace dentro-del-tablero-p)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;; FUNCIONES DE PUNTOS CARDINALES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; función que cuenta las fichas que hay debajo de un determinado punto del fichero.
 (defun contar-abajo (tablero ficha columna fila)
   (if (or (not (dentro-del-tablero-p tablero columna fila))
 	  (not (eql (obtener-ficha tablero columna fila) ficha)))
       0
     (1+ (contar-abajo tablero ficha columna (1- fila)))))
 
+;; función que cuenta las fichas que hay encima de un determinado punto del fichero.
 (defun contar-arriba (tablero ficha columna fila)
   (if (or (not (dentro-del-tablero-p tablero columna fila))
 	  (not (eql (obtener-ficha tablero columna fila) ficha)))
       0
     (1+ (contar-arriba tablero ficha columna (1+ fila)))))
 
+;; función que cuenta las fichas que hay a la derecha de un determinado punto del fichero.
 (defun contar-derecha (tablero ficha columna fila)
   (if (or (not (dentro-del-tablero-p tablero columna fila))
 	  (not (eql (obtener-ficha tablero columna fila) ficha)))
       0
     (1+ (contar-derecha tablero ficha (1+ columna) fila))))
 
+;; función que cuenta las fichas que hay a la izquierda de un determinado punto del fichero.
 (defun contar-izquierda (tablero ficha columna fila)
   (if (or (not (dentro-del-tablero-p tablero columna fila))
 	  (not (eql (obtener-ficha tablero columna fila) ficha)))
       0
     (1+ (contar-izquierda tablero ficha (1- columna) fila))))
 
+;; función mixta, se usan para calcular las diagonales, busca la posició que está contar_abajo
+;; y a la derecha
 (defun contar-abajo-derecha (tablero ficha columna fila)
   (if (or (not (dentro-del-tablero-p tablero columna fila))
 	  (not (eql (obtener-ficha tablero columna fila) ficha)))
       0
     (1+ (contar-abajo-derecha tablero ficha (1+ columna) (1- fila)))))
 
+;; función mixta, se usan para calcular las diagonales, busca la posició que está contar_abajo
+;; y a la derecha.
 (defun contar-abajo-izquierda (tablero ficha columna fila)
   (if (or (not (dentro-del-tablero-p tablero columna fila))
 	  (not (eql (obtener-ficha tablero columna fila) ficha)))
       0
     (1+ (contar-abajo-izquierda tablero ficha (1- columna) (1- fila)))))
 
+;; función mixta, se usan para calcular las diagonales, busca la posició que está contar_abajo
+;; y a la derecha.
 (defun contar-arriba-derecha (tablero ficha columna fila)
   (if (or (not (dentro-del-tablero-p tablero columna fila))
 	  (not (eql (obtener-ficha tablero columna fila) ficha)))
       0
     (1+ (contar-arriba-derecha tablero ficha (1+ columna) (1+ fila)))))
 
+;; función mixta, se usan para calcular las diagonales, busca la posició que está contar_abajo
+;; y a la derecha.
 (defun contar-arriba-izquierda (tablero ficha columna fila)
   (if (or (not (dentro-del-tablero-p tablero columna fila))
 	  (not (eql (obtener-ficha tablero columna fila) ficha)))
@@ -225,7 +269,7 @@
 ;; ----------------------------------------------------------------------------------------
 
 (defstruct estado
-  (turno 0) 
+  (turno 0)
   (tablero (make-tablero)))
 
 (defun copiar-estado (estado)
