@@ -27,6 +27,8 @@
 	   :contar-arriba-derecha
 	   :contar-arriba-izquierda
 	   :copiar-estado
+     :contar-fichas
+     :tablero-casillas
 	   :acciones-posibles
 	   :siguiente-jugador
 	   :ejecutar-accion
@@ -115,7 +117,8 @@
   (format t "·~%")
   (loop for j from 0 below (tablero-ancho tablero) do
 	(format t " [~S]" j))
-  (format t "~%"))
+  (format t "~%")
+  (format t "Fichas en tablero -> ~S" (contar-fichas tablero) ))
 
 ;; función que busca, dado el tablero que columnas son jugables y cuales no,
 ;; para ello busca primero cuales son las columnas que están libres buscando
@@ -399,5 +402,4 @@
 
 (defun f-no-eval (estado)
   0)
-
 ;;
