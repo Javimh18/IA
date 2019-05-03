@@ -1,19 +1,10 @@
-(use-package 'conecta4)
+(defpackage :2361_P04_e94a8
+(:use :common-lisp :conecta4) ; el paquete usa common-lisp y conecta4
+(:export :heuristica :*alias*)) ; exporta la función de evaluación y un alias
+(in-package 2361_P04_e94a8)
+(defvar *alias* '|JaviPrueba|) ; alias que aparece en el ranking
 
-(declaim #+sbcl(sb-ext:muffle-conditions style-warning))
-
-;; -------------------------------------------------------------------------------
-;; Funciones de evaluación
-;; -------------------------------------------------------------------------------
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;JUGADOR DE MUÑAAA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun f-eval-bueno-javi (estado)
-; current player standpoint
+(defun heuristica (estado); current player standpoint
 (let* ((tablero (estado-tablero estado))
  (ficha-actual (estado-turno estado))
  (ficha-oponente (siguiente-jugador ficha-actual)))
@@ -405,40 +396,3 @@
    contador
  )
 )
-
-;; -------------------------------------------------------------------------------
-;; Jugadores
-;; -------------------------------------------------------------------------------
-
-(defvar *jugador-aleatorio* (make-jugador :nombre 'Jugador-aleatorio
-					  :f-jugador #'f-jugador-aleatorio
-					  :f-eval  #'f-eval-aleatoria))
-
-(defvar *jugador-bueno-guille* (make-jugador :nombre 'Jugador-bueno
-				      :f-jugador #'f-jugador-negamax
-				      :f-eval  #'f-eval-bueno-guille))
-
-(defvar *jugador-bueno-javi* (make-jugador :nombre 'Jugador-bueno
-				      :f-jugador #'f-jugador-negamax
-				      :f-eval  #'f-eval-bueno-javi))
-
-(defvar *jugador-humano* (make-jugador :nombre 'Jugador-humano
-				       :f-jugador #'f-jugador-humano
-				       :f-eval  #'f-no-eval))
-
-
-;; -------------------------------------------------------------------------------
-;; Algunas partidas de ejemplo:
-;; -------------------------------------------------------------------------------
-
-(setf *verbose* t)
-
-;(print (partida *jugador-aleatorio* *jugador-aleatorio*))
-;(print (partida *jugador-bueno-guille* *jugador-bueno-javi* 4))
-(print (partida *jugador-bueno-javi* *jugador-bueno-guille* 4))
-;(print (partida *jugador-bueno* *jugador-aleatorio* 4))
-;(print (partida *jugador-bueno* *jugador-bueno* 4))
-;(print (partida *jugador-humano* *jugador-humano*))
-;(print (partida *jugador-humano* *jugador-aleatorio* 4))
-;(print (partida *jugador-humano* *jugador-bueno* 4))
-;(print (partida *jugador-aleatorio* *jugador-humano*))
